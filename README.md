@@ -1,2 +1,2 @@
 # Project_Endeavour
-Setting up a working dash application
+Setting up a working django application
