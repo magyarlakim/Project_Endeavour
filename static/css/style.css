@@ -3,15 +3,39 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(to top left, #f1f3f2, #ffffff);
+    background: linear-gradient(to top left, #f1f3f2, #ffffff78);
 }
 
 h1 {
     font-family: helvetica;
-    font-size: 50px;
+    font-size: 25px;
     line-height: 1.3;
     width: 100%;
     padding: 30px;
     text-align: center;
     color: rgb(0, 0, 0);
 }
+
+.cardcontainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 60%;   
+}
+
+datalist {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    writing-mode: vertical-lr;
+    width: 200px;
+  }
+  
+  option {
+    padding: 0;
+  }
+  
+  input[type="range"] {
+    width: 200px;
+    margin: 0;
+  }

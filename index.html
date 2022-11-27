@@ -4,12 +4,62 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Project Kurkuma</title>
-  <link rel="stylesheet" href="static/css/style.css"> 
+    <title>Project Diavolezza</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.2.2/lux/bootstrap.min.css" integrity="sha512-c92Fgo6BOkdn6SLfXJQb1gBV26zNssZQwtkLPFoMX0B5JXd+yeOo0nx5v3rEYsjvMy97CpIRdsV4HA+AysY2Eg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="static/css/style.css"> 
 </head>
   <script src="static/js/script.js"></scriptsrc></script>
+
 <body>
         <h1>All the wonders of the universe are here to shine</h1>
         <img src="static/img/Diavolezza.jpeg" alt="Logo" width="800" height="400">
+        <br>
+        <div class="cardcontainer">
+            <div class="card border-secondary mb-3" style="max-width: 500rem;">
+                <div class="card-header">When will I retire?</div>
+                <div class="card-body">
+                  <h4 class="card-title"><div id='content'></div></h4>
+                  <p class="card-text">
+                    <label> Year of birth:</label>
+                    <output id="amount" name="amount" for="birthYearRange">1950</output>
+                    <input type="range" class="form-range" id="birthYearRange" name="birthYearRange"
+                    min=1900 max=2022 step=1 oninput="amount.value=birthYearRange.value">
+                    <center>
+                    <input type="button" value="Calculate" class="btn btn-primary"
+                    onclick="yearsUntilRetirement_mod('You')"> 
+                </center>
+                  </p>
+                </div>
+            </div>
+            <div class="card border-secondary mb-3" style="max-width: 500rem;">
+                <div class="card-header">What will be my expected return?</div>
+                    <div class="card-body">
+                      <h4 class="card-title"><div id='portfolio_proceeds'></div></h4>
+                      <p class="card-text">
+                        <label for="temp">Choose a fitting portfolio</label><br />
+                        <input type="range" id="temp" name="temp" list="tickmarks" />
+
+                        <datalist id="tickmarks">
+                            <option value="0" label="cash and MM"></option>
+                            <option value="25" label="fixed income"></option>
+                            <option value="50" label="fixed income + equity"></option>
+                            <option value="75" label="equity"></option>
+                            <option value="100" label="equity and structured products"></option>
+                        </datalist>
+                        <center>
+                        <input type="button" value="Calculate" class="btn btn-primary"
+                        onclick="get_portfolio_type()"> 
+                    </center>
+                      </p>
+                    </div>
+                  </div>
+        </div>
+            
+        
+        
+        
+        
+         
+        
   </body>
 </html>
