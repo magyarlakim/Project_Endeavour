@@ -21,11 +21,23 @@ reload(aux)
 
 # Inputs for datafetching and portfolio visualization
 ticker=['AAPL','^GSPC','MS','MSFT','EBS.VI','MOL.BD','CSGN.SW']
+weights=[10000,14500,26000,45000,13000,24000,22000]
+sector=['Tech','Index','Financials','Tech','Financials','Energy','Financials']
+countries=['US','US','US','US','EU','EU','CH']
 start=dt.datetime(2019,1,1)
 end=dt.datetime(2022,12,2)
 column_to_display='Adj Close'
 days_lag=5
+portfolio_composition={
+    'Security': ticker,
+    'Investment':weights,
+    'Sector':sector,
+    'Country': countries
 
+
+}
+#Create initial portfolio
+Inital_portfolio=pd.DataFrame(portfolio_composition)
 
 #Get the closing prices and the volumes
 ClosePrice=aux.Get_security_pandas_datareader(ticker, start, end, column_to_display)

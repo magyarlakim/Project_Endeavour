@@ -11,7 +11,6 @@ import numpy as np
 import urllib
 from time import perf_counter
 import plotly.express as px
-import plotly.offline.plot as ploff
 
 def Get_security_Yahoofinance(ticker, period, columns):
     """
@@ -60,7 +59,7 @@ def Calculate_returns(is_logreturn,data,days_lag, Notional):
     Output:
         Returns of the securities specified
     """
-    df_index=pd.DataFrame(columns=data.columns, index=data.index).fillna(value=100)
+    #df_index=pd.DataFrame(columns=data.columns, index=data.index).fillna(value=100)
     if (is_logreturn):
         print("calculating logreturns with "+str(days_lag)+" day shift!")
         #calculate normal returns and select only every nth element to refelct the true return as a time series
@@ -80,8 +79,10 @@ def Calculate_returns(is_logreturn,data,days_lag, Notional):
     return(df_returns, df_index)
 
 def Calculate_summary_stat(data):
-    
-    return()
+    loss_quantile=0.995
+    return_quantile =np.quantile(data,loss_quantile)
+    return(return_quantile)
+
 def Show_box_plots_of_returns(data):
     """
     This function shows box plots of return data for multiple securities
@@ -148,9 +149,14 @@ def Show_return_time_series(data):
                     title="Price evolution of portfolio constituents",
                     xaxis= dict(
                         title="Date",
+                        showline=True,
                         showgrid=False,
+                        showticklabels=True,
                         ),
-                    yaxis= dict(showgrid=True,
+                    yaxis= dict(
+                            showgrid=False,
+                            showline=True,
+                            showticklabels=True,
                             title="Value of 100 unit investment",
                         ),
                     font= dict(
@@ -163,6 +169,54 @@ def Show_return_time_series(data):
     return(fig)
 # Playing around with classes
 
+def Show_portfolio_evolution(data):
+    """
+    This function shows time series of data for multiple securities
+
+    Input:
+        data: Contains a dataframe where columns are the security tickers and
+        rows are return observation at a point of time
+    Output:
+        Plotly plot of multiple time series of underlying portfolio components
+    """
+    # Create figure with iterative multiple lines
+    fig = go.Figure()
+    colorpalette=px.colors.sequential.Bluyl
+    for idx, col in enumerate(data.columns, 0):
+        fig.add_trace(go.Scatter(x=data.index,
+                            y=data.iloc[:,idx],#data[data.columns[0]],
+                            #color=volumes[data.columns[0]],
+                            mode='lines',
+                            line=dict(
+                                width=0.5,
+                                color=colorpalette[idx]
+                            ),
+                            stackgroup='one',
+                            #marker_size = volumes[data.columns[0]],
+                            name=col))#data.columns[0]))
+    fig.update_layout(paper_bgcolor="#FFFFFF",
+                    plot_bgcolor="#FFFFFF",
+                    #margin=dict(l=2,r=2,b=2,t=2),
+                    title="Portfolio value evolution over time",
+                    xaxis= dict(
+                        title="Date",
+                        showline=True,
+                        showgrid=False,
+                        showticklabels=True,
+                        ),
+                    yaxis= dict(
+                            showgrid=False,
+                            showline=True,
+                            showticklabels=True,
+                            title="Value of the portfolio",
+                        ),
+                    font= dict(
+                        family="Helvetica",
+                        size=16,
+                        color='#2B2C2E',
+                    )
+                )
+    return(fig)
 class Paramount():
     """ A usefull class to start with
     :inpu1= Nothing
