@@ -73,3 +73,25 @@ const get_portfolio_type = function(){
 //console.log(yearsUntilRetirement(1991, 'Jonas'));
 //console.log(yearsUntilRetirement(1950, 'Mike'));
 //document.getElementById('content').innerHTML = "trial";
+
+const friends = ['Michael', 'Steve', 'Pete'];
+const year = new Array(1991, 2022,2034, 2045);
+console.log(year[0]);
+console.log(year.length);
+console.log(friends.length-1);
+
+friends[2] = 'Jay';
+// add elemenets
+const jonas = ['Jonas', 'Bela', 2037-1990, friends];
+friends.push('Jerry');
+console.log(friends);
+friends.unshift('John');
+
+//remove elements
+
+// pop removes last element
+friends.pop(); //last
+friends.shift(); //first
+console.log(friends.indexOf('Steven'));
+// include instead of return the index TRue vs False
+console.log(friends.includes('Steven'));

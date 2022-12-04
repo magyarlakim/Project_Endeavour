@@ -31,11 +31,11 @@ datalist {
     width: 200px;
   }
   
-  option {
+option {
     padding: 0;
   }
   
-  input[type="range"] {
+input[type="range"] {
     width: 200px;
     margin: 0;
   }
