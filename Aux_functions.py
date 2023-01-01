@@ -217,47 +217,60 @@ def Show_portfolio_evolution(data):
                     )
                 )
     return(fig)
-class Paramount():
-    """ A usefull class to start with
-    :inpu1= Nothing
-    :input2= Nothing again
-    :outout= Nothing
-    """
-    language= 'Turkish'
-    version='1.1'
-    def say_hello():
-        print(f'Hello from{Paramount.language}')
 
+class Calculate_returns:
+    def __init__(self, width, height):
+        self.width=width
+        self.height=height
+    @property
+    def width(self):
+        print("I am running")
+        return self._width
+    @property
+    def height(self):
+        return self._height
 
-class Circle:
-    """ This class is using property and cahcing the value """
-    def __init__(self, radius):
-        self._radius = radius
-        self._area = None
+    @width.setter
+    def width(self, width):
+        if width <= 0:
+            raise ValueError("Width must be positive")
+        else:
+            self._width=width
+    @height.setter
+    def height(self, height):
+        if height <= 0:
+            raise ValueError("Height must be positive")
+        else:
+            self._height=height
     
-    @property
-    def radius(self):
-        return self._radius
-    
-    @radius.setter
-    def radius(self, value):
-        self._area = None
-        self._radius = value
-    
-    @property
     def area(self):
-        if self._area is None:
-            print('Calculating area')
-            self._area = np.pi * (self.radius ** 2)
-        return self._area
-
-
-c= Circle(1)
-c.area
-c.radius = 2
-c.__dict__
-c.area
-
+        myarea=self.width+self.height
+        return myarea
+    # return string representation
+    def __str__(self):
+        return 'Rectangle: width={0}, heights={1}'.format(self.width, self.height)
+    #representation of the instance
+    def __repr__(self):
+        return 'This is a special class'
+    #equality testing
+    def __eq__(self, other):
+        if isinstance(other, Calculate_returns):
+            return self.width==other.width and self.height == other.height
+        else:
+            return False
+    def __lt__(self, other):
+        if isinstance(other, Calculate_returns):
+            return self.area()< other.area()
+        else:
+            return NotImplemented
+r1=Calculate_returns(10,20)
+r2=Calculate_returns(10,20)
+r3=Calculate_returns(10,-100)
+r1.height=-100
+str(r1)
+r1 == r2
+r1 > r3
+hex(id(r2))
 class WebPage:
     def __init__(self, url):
         self.url = url
@@ -310,4 +323,4 @@ urls = [
 #for url in urls:
 #    page=WebPage(url)
 #    print(f'{url}\tsize={format(page.page_size, "_")}\telapsed={page.time_elapsed:.2f} secs')
-    
+
