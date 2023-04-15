@@ -1,18 +1,70 @@
 """
-This script contains the auxiliary functions for the calculation
+This script contains the core and auxiliary functions for the calculation
 """
 import yfinance as yf
 import pandas_datareader as pdr
+#This override is neccessarry to overcome the data limitations of yahoo finance
+yf.pdr_override()
 import datetime as dt
 from pandas.tseries.offsets import BDay
 import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
+import pandas as pd
 import urllib
 from time import perf_counter
 import plotly.express as px
+import sklearn
+from sklearn.datasets import load_iris
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
-def Get_security_Yahoofinance(ticker, period, columns):
+#Decorators
+
+def timed(fn):
+    """This functions times the execution of the inpit function
+
+    Args:
+        fn (function): Any selected function for whichh timing exercise needs to be performed
+
+    Returns:
+        Inner function: _returns the inputted functions wrapped with the timining functionality
+    """
+    from functools import wraps
+    from datetime import datetime, timezone
+    from time import perf_counter
+
+    @wraps(fn)
+    def inner(*args, **kwargs):
+        start= perf_counter()
+        result=fn(*args,**kwargs)
+        end=perf_counter()
+        print('{0} ran for {1:.6f}s'.format(fn.__name__, end-start))
+        return result
+    return inner
+
+#Classes
+class SurvivalClass:
+    """ The Survival class loads in a basic dataset class
+    and performs baseic clusetring on it
+    """ 
+    def __init__(self, DatasetInput):
+        self.DatasetInput=DatasetInput
+        print("initializing parameters...")
+    
+    def load_target_and_dataset(self, no_of_clusters=3):
+        self.data = self.DatasetInput.data
+        self.target = self.DatasetInput.target
+        self.n_clusters = no_of_clusters
+        self.estimator = KMeans(n_clusters=3, n_init="auto")
+    
+    def cluster_the_population(self):
+        results=self.estimator.fit(self.data)
+        return results
+
+#functions
+
+def get_security_yahoofinance(ticker, period, columns):
     """
     Function to fetch security data from yahoo finance directly
     though yahoofinance package
@@ -27,7 +79,7 @@ def Get_security_Yahoofinance(ticker, period, columns):
     Output=security_object.history(period=period)[columns]
     return(Output)
 
-def Get_security_pandas_datareader(ticker, start, end, column_to_display):
+def get_security_pandas_datareader(ticker, start, end, column_to_display):
     """
     Function to fetch security data from yahoo finance directly
     though yahoofinance package
@@ -38,16 +90,17 @@ def Get_security_pandas_datareader(ticker, start, end, column_to_display):
     Output:
         Dataframe with results
     """
-    downloaded= pdr.data.DataReader(ticker,'yahoo', start, end)
+    downloaded= pdr.data.DataReader(ticker, start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
     close=downloaded.loc[:,downloaded.columns.isin([column_to_display], level=0)]
     close = close.fillna(method='ffill')
-    close.columns=close.columns.get_level_values(1)
+    if isinstance(close.columns, pd.MultiIndex):
+        close.columns=close.columns.get_level_values(1)
     # Getting all weekdays between star and enddate
-    all_weekdays = pd.date_range(start+BDay(2), end, freq='B')
+    all_weekdays = pd.date_range((start+BDay(2)).strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'), freq='B')
     close = close.reindex(all_weekdays)
     return(close)
 
-def Calculate_returns(is_logreturn,data,days_lag, Notional):
+def calculate_returns(is_logreturn,data,days_lag, Notional):
     """
     Create log or normal return dataframes
     Input:
@@ -78,12 +131,12 @@ def Calculate_returns(is_logreturn,data,days_lag, Notional):
     df_index=df_index.iloc[days_lag:,:]
     return(df_returns, df_index)
 
-def Calculate_summary_stat(data):
+def calculate_summary_stat(data):
     loss_quantile=0.995
     return_quantile =np.quantile(data,loss_quantile)
     return(return_quantile)
 
-def Show_box_plots_of_returns(data):
+def show_box_plots_of_returns(data):
     """
     This function shows box plots of return data for multiple securities
 
@@ -119,7 +172,7 @@ def Show_box_plots_of_returns(data):
                 )
     fig.show()
 
-def Show_return_time_series(data):
+def show_return_time_series(data):
     """
     This function shows time series of data for multiple securities
 
@@ -169,7 +222,7 @@ def Show_return_time_series(data):
     return(fig)
 # Playing around with classes
 
-def Show_portfolio_evolution(data):
+def show_portfolio_evolution(data):
     """
     This function shows time series of data for multiple securities
 
@@ -217,110 +270,4 @@ def Show_portfolio_evolution(data):
                     )
                 )
     return(fig)
-
-class Calculate_returns:
-    def __init__(self, width, height):
-        self.width=width
-        self.height=height
-    @property
-    def width(self):
-        print("I am running")
-        return self._width
-    @property
-    def height(self):
-        return self._height
-
-    @width.setter
-    def width(self, width):
-        if width <= 0:
-            raise ValueError("Width must be positive")
-        else:
-            self._width=width
-    @height.setter
-    def height(self, height):
-        if height <= 0:
-            raise ValueError("Height must be positive")
-        else:
-            self._height=height
-    
-    def area(self):
-        myarea=self.width+self.height
-        return myarea
-    # return string representation
-    def __str__(self):
-        return 'Rectangle: width={0}, heights={1}'.format(self.width, self.height)
-    #representation of the instance
-    def __repr__(self):
-        return 'This is a special class'
-    #equality testing
-    def __eq__(self, other):
-        if isinstance(other, Calculate_returns):
-            return self.width==other.width and self.height == other.height
-        else:
-            return False
-    def __lt__(self, other):
-        if isinstance(other, Calculate_returns):
-            return self.area()< other.area()
-        else:
-            return NotImplemented
-r1=Calculate_returns(10,20)
-r2=Calculate_returns(10,20)
-r3=Calculate_returns(10,-100)
-r1.height=-100
-str(r1)
-r1 == r2
-r1 > r3
-hex(id(r2))
-class WebPage:
-    def __init__(self, url):
-        self.url = url
-        self._page= None
-        self._load_time_secs = None
-        self._page_size = None
-
-    @property
-    def url(self):
-        return self._url
-    
-    @url.setter
-    def url(self, value):
-        self._url = value
-        self._page = None
-    
-    @property
-    def page(self):
-        if self._page is None:
-            self.download_page()
-        return self._page
-    
-    @property
-    def page_size(self):
-        if self._page is None:
-            self.download_page()
-        return self._page_size
-
-    @property
-    def time_elapsed(self):
-        if self._page is None:
-            self.download_page()
-        return self._load_time_secs
-    
-    def download_page(self):
-        self._page_size=None
-        self._load_time_secs = None
-        start_time = perf_counter()
-        with urllib.request.urlopen(self.url) as f:
-            self._page=f.read()
-        end_time= perf_counter()
-        self._load_time_secs= end_time- start_time
-
-urls = [
-    'https://wwww.google.com',
-    'https://wwww.python.org',
-    'https://wwww.yahoo.com'
-]
-
-#for url in urls:
-#    page=WebPage(url)
-#    print(f'{url}\tsize={format(page.page_size, "_")}\telapsed={page.time_elapsed:.2f} secs')
 

@@ -1,21 +1,16 @@
-// Functions Calling Other Functions
-function cutFruitPieces(fruit) {
-    return fruit * 4;
-  }
-  
-function fruitProcessor(apples, oranges) {
-    const applePieces = cutFruitPieces(apples);
-    const orangePieces = cutFruitPieces(oranges);
-  
-    const juice = `Juice with ${applePieces} piece of apple and ${orangePieces} pieces of orange.`;
-    return juice;
-  }
-console.log(fruitProcessor(2, 3));
-console.log(cutFruitPieces(6));
+// Functions for the retirnement calculator
 
-const calcAge = function(birthYear){
-  return 2022 - birthYear;
-}
+const calcAge = function(birthYear) {
+  // define the age using current year
+  const currentYear = new Date().getFullYear();
+  
+  if (birthYear) {
+    age = currentYear - Number(birthYear);
+  } else {
+    age = "Please provide valid year";
+  }
+  return age
+};
 
 const yearsUntilRetirement = function (birthYear, firstName) {
   const age = calcAge(birthYear);
@@ -27,11 +22,11 @@ const yearsUntilRetirement = function (birthYear, firstName) {
     document.getElementById('content').innerHTML = `${firstName} retires in ${retirement} years`
     return retirement;
   } else {
-    console.log(`${firstName} has already retired 🎉`);
+    console.log(`${firstName} has already retired `);
     document.getElementById('content').innerHTML = `${firstName} has already retired 🎉`
     return -1;
   }
-}
+};
 
 // updated function with ability to change
 
@@ -49,7 +44,7 @@ const yearsUntilRetirement_mod = function (firstName) {
     return retirement;
   } else {
     console.log(`${firstName} has already retired 🎉`);
-    document.getElementById('content').innerHTML = `${firstName} have already retired 🎉`
+    document.getElementById('content').innerHTML = `${firstName} have already retired `
     return -1;
   }
 }
@@ -74,24 +69,116 @@ const get_portfolio_type = function(){
 //console.log(yearsUntilRetirement(1950, 'Mike'));
 //document.getElementById('content').innerHTML = "trial";
 
-const friends = ['Michael', 'Steve', 'Pete'];
-const year = new Array(1991, 2022,2034, 2045);
-console.log(year[0]);
-console.log(year.length);
-console.log(friends.length-1);
+let countriesContainer = document.querySelector('.countries');
 
-friends[2] = 'Jay';
-// add elemenets
-const jonas = ['Jonas', 'Bela', 2037-1990, friends];
-friends.push('Jerry');
-console.log(friends);
-friends.unshift('John');
+const getCountryData = function(country){
+  const request = new XMLHttpRequest();
+  request.open('GET',`https://restcountries.com/v3.1/name/${country}`);
+  request.send();
 
-//remove elements
+  request.addEventListener('load', function(){
+    
 
-// pop removes last element
-friends.pop(); //last
-friends.shift(); //first
-console.log(friends.indexOf('Steven'));
-// include instead of return the index TRue vs False
-console.log(friends.includes('Steven'));
+  const data = JSON.parse(this.responseText)[0];
+  //console.log(data);
+
+  let  html_object=
+    `<div class="card border-secondary mb-3" style="max-width: 100rem;">
+                <div class="card-header">${data.name.official}
+                <img class="country_img" src="${data.coatOfArms.png}" height="20" />
+                </div>
+                <div class="card-body">
+                
+                <div>
+                <ul>
+                <li>
+                Capital: ${data.capital}
+                </li>
+                <li>
+                Region: ${data.region} 
+                </li>
+                <li>
+                Subregion: ${data.subregion}
+                </li>
+                </ul>
+                </div>
+                </div>
+      </div>
+    `
+
+    //console.log(html_object);
+    document.querySelector('.countries').insertAdjacentHTML('beforeend', html_object);
+  });
+};
+
+const getCountryAndNeigborData = function(country){
+  const request = new XMLHttpRequest();
+  request.open('GET',`https://restcountries.com/v3.1/name/${country}`);
+  request.send();
+
+  request.addEventListener('load', function(){
+    
+
+  const data = JSON.parse(this.responseText)[0];
+  console.log(data);
+
+  let  html_object=
+    `<div class="card border-secondary mb-3" style="max-width: 100rem;">
+                <div class="card-header">${data.name.official}
+                <img class="country_img" src="${data.coatOfArms.png}" height="20" />
+                </div>
+                <div class="card-body">
+                
+                <div>
+                <ul>
+                <li>
+                Capital: ${data.capital}
+                </li>
+                <li>
+                Region: ${data.region} 
+                </li>
+                <li>
+                Subregion: ${data.subregion}
+                </li>
+                </ul>
+                </div>
+                </div>
+      </div>
+    `
+
+    //console.log(html_object);
+    document.querySelector('.countries').insertAdjacentHTML('beforeend', html_object);
+  });
+};
+document.addEventListener('DOMContentLoaded', function() {
+  get_portfolio_type();
+  yearsUntilRetirement_mod('Bélam');
+}, false);
+getCountryData('usa');
+getCountryData('switzerland');
+getCountryData('qatar');
+getCountryData('hungary');
+//getCountryData('serbia');
+//getCountryData('russia');
+
+let country= 'russia';
+
+const getCountryDataFetch = function(country){
+  fetch(`https://restcountries.com/v3.1/name/${country}`
+  ).then(
+  function(response) {
+    return response.json();
+  }
+  ).then(
+    function(data){
+      console.log(data);
+    }
+  );
+};
+const getCountryDataFetch_clean = function(country){
+  fetch(`https://restcountries.com/v3.1/name/${country}`)
+  .then( response => response.json())
+  .then( data => console.log(data));
+};
+getCountryDataFetch('hungary');
+getCountryDataFetch_clean('israel');

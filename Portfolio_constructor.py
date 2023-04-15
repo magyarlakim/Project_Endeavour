@@ -14,6 +14,7 @@ import urllib
 from time import perf_counter
 import yfinance as yf
 import pandas_datareader as pdr
+yf.pdr_override()
 import datetime as dt
 from pandas.tseries.offsets import BDay
 import Aux_functions as aux
@@ -27,7 +28,7 @@ weights=[10000,14500,26000,45000,13000,24000,22000]
 sector=['Tech','Index','Financials','Tech','Financials','Energy','Financials']
 countries=['US','US','US','US','EU','EU','CH']
 start=dt.datetime(2019,1,1)
-end=dt.datetime(2022,12,2)
+end=dt.datetime(2023,3,20)
 column_to_display='Adj Close'
 days_lag=5
 portfolio_composition={
@@ -42,18 +43,18 @@ weights_input=Inital_portfolio[['Security', 'Investment']].\
     set_index('Security').\
     T
 #Get the closing prices and the volumes
-ClosePrice=aux.Get_security_pandas_datareader(ticker, start, end, column_to_display)
-Volumes=aux.Get_security_pandas_datareader(ticker, start, end, column_to_display="Volume")
-daily_log, daily_index=aux.Calculate_returns(is_logreturn=True, data=ClosePrice, days_lag=days_lag, Notional=weights)
+ClosePrice=aux.get_security_pandas_datareader(ticker, start, end, column_to_display)
+Volumes=aux.get_security_pandas_datareader(ticker, start, end, column_to_display="Volume")
+daily_log, daily_index=aux.calculate_returns(is_logreturn=True, data=ClosePrice, days_lag=days_lag, Notional=weights)
 daily_index
 volumes=Volumes.iloc[days_lag:,:]
 
 #Show the series of individual securities
-Portfolio_img=aux.Show_return_time_series(daily_index)
+Portfolio_img=aux.show_return_time_series(daily_index)
 Portfolio_img.show()
-aux.Show_box_plots_of_returns(daily_log)
+aux.show_box_plots_of_returns(daily_log)
 # SHow the evolution of the portfolio using user defined weights
-Portfolio_ret=aux.Show_portfolio_evolution(daily_index)
+Portfolio_ret=aux.show_portfolio_evolution(daily_index)
 Portfolio_ret.show()
 
 #Show the correlation matrix
@@ -63,5 +64,5 @@ plt.show()
 
 
 # linear regression on past returns
-import sklearn
-import this
+#to be developed
+
