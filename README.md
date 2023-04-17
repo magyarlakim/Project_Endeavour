@@ -19,8 +19,6 @@
     <li>Clean and format the data and create return time series </li>
     <li>Calculate different metrics on the time series</li>
     <li>Create portfolios and plot their performance across time with Plotly</li>
-    Moreover
-
     <li>Performs KMeans and MiniBatch clustering and Prinicipal Component Analysis on the underlying dataset </li>
     </ul>
     <a href="https://github.com/magyarlakim/Project_Endeavour"><strong>Explore the docs »</strong></a>
