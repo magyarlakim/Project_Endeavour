@@ -61,8 +61,3 @@ Portfolio_ret.show()
 corr_matrix=daily_log.corr()
 sns.heatmap(corr_matrix, annot = True, linewidths = 0.5)
 plt.show()
-
-
-# linear regression on past returns
-#to be developed
-

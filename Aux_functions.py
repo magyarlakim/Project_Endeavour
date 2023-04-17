@@ -17,6 +17,9 @@ import plotly.express as px
 import sklearn
 from sklearn.datasets import load_iris
 from sklearn.cluster import KMeans
+from sklearn.cluster import MiniBatchKMeans
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import matplotlib.pyplot as plt
 
 #Decorators
@@ -44,25 +47,170 @@ def timed(fn):
     return inner
 
 #Classes
-class SurvivalClass:
-    """ The Survival class loads in a basic dataset class
-    and performs baseic clusetring on it
-    """ 
+class DimensionalityReductionClass:
+    """ The DimensionalityReduction class loads in a basic dataset class 
+    represent a data for which dimesnionaloty reduction will be performed:
+    ...
+
+    Attributes
+    ----------
+    DatasetInput : array
+        Array on which the dimensionaity reduction exercise will be perfomed
+
+    Methods
+    -------
+    load_target_and_dataset():
+        Prints the person's name and age.
+    pca_lda_model(isPCA:bool=True, n_components=2):
+        specify the model using the number of components and isPCA boolean variable as input
+    model_fitting(model):
+        fit the model to the database defined at instantiation of the class and produce results
+    """
+
+
     def __init__(self, DatasetInput):
         self.DatasetInput=DatasetInput
         print("initializing parameters...")
     
-    def load_target_and_dataset(self, no_of_clusters=3):
+    def load_target_and_dataset(self):
+        """Identify the data and the target population from the dataset
+
+        Args:
+            None
+
+        Returns:
+            data: obj
+                Data on which the model will ned to be run
+            target: obj
+                Data which contains the target outputs
+            target_names: obj
+                Data which contains the target outputs names
+
+        """
         self.data = self.DatasetInput.data
         self.target = self.DatasetInput.target
-        self.n_clusters = no_of_clusters
-        self.estimator = KMeans(n_clusters=3, n_init="auto")
+        self.target_names = self.DatasetInput.target_names
+        return [self.data, self.target, self.target_names]
+
+    def pca_lda_model(self, isPCA:bool=True, n_components=2):
+        """A module that is performing the creation and parametrization of the model.
+
+        Args:
+            isPCA (bool, optional): _description_. Defaults to True.
+            n_components (int, optional): _description_. Defaults to 2.
+
+        Returns:
+            model(scikit-learn model class): a fully fledged model ready to be fit to the population
+        """
+        if (isPCA):
+            model = PCA(n_components=n_components)
+        else:
+            model = LinearDiscriminantAnalysis(n_components=n_components)
+        return model
     
-    def cluster_the_population(self):
-        results=self.estimator.fit(self.data)
+    def model_fitting(self, model):
+        """This function performs the fitting of the model to the predefined dataset
+
+        Args:
+           model(scikit-learn model class): a fully fledged model ready to be fit to the population
+
+        Returns:
+            The results of the fitted model to the dataset
+        """
+        if isinstance(model, sklearn.discriminant_analysis.LinearDiscriminantAnalysis):
+            results=model.fit(self.data, self.target)
+        else:
+            results=model.fit(self.data)
+        return results
+    
+class ClusteringClass:
+    """ The Clustering class loads in a basic dataset class
+    and performs multiple different clustering operations on it
+    """ 
+
+
+    def __init__(self, DatasetInput):
+        self.DatasetInput=DatasetInput
+        print("initializing parameters...")
+    
+    def load_target_and_dataset(self):
+        """Identify the data and the target population from the dataset
+        """
+        self.data = self.DatasetInput.data
+        self.target = self.DatasetInput.target
+        self.target_names = self.DatasetInput.target_names
+        return [self.data, self.target, self.target_names]
+        
+    def clustering_model(self, no_of_clusters=3, MiniBatch: bool=False,batch_size=1000):
+        """A module that is performing the creation and parametrization of the model.
+
+        Args:
+            no_of_clusters (int, optional): _description_. Defaults to 3.
+            MiniBatch (bool, optional): _description_. Defaults to False.
+            batch_size (int, optional): _description_. Defaults to 1000.
+
+        Returns:
+            model(scikit-learn model class): a fully fledged model ready to be fit to the population
+        """
+        self.n_clusters = no_of_clusters
+        if (MiniBatch):
+            model = MiniBatchKMeans(n_clusters=3, n_init="auto",batch_size=batch_size)
+        else:
+            model = KMeans(n_clusters=3, n_init="auto")
+        return model
+
+    def model_fitting(self, model):
+        """This function performs the fitting of the model to the predefined dataset
+
+        Args:
+           model(scikit-learn model class): a fully fledged model ready to be fit to the population
+
+        Returns:
+            The results of the fitted model to the dataset
+        """
+        if isinstance(model, sklearn.discriminant_analysis.LinearDiscriminantAnalysis):
+            results=model.fit(self.data, self.target)
+        else:
+            results=model.fit(self.data)
         return results
 
 #functions
+def comparison_scatter_plotting_duo(X1,X2,Y,target_names,colors, title1, title2, mainTitle, ShowPlot:bool= True):
+    """This function plots duo scatterplots from calibrated model outputs
+
+    Args:
+        X1 (_type_): _description_
+        X2 (_type_): _description_
+        Y (_type_): Target variable of the population
+        target_name (_type_): _description_
+        colors (_type_): _description_
+        ShowPlot (bool, optional): _description_. Defaults to True.
+    """
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    fig.suptitle(mainTitle)
+
+    colors = ["#E74C3C", "#3498DB", "#D4AC0D"]
+    lw = 2
+    #PCA
+    #ax1.figure()
+    for color, i, target_name in zip(colors, [0, 1, 2], target_names):
+        ax1.scatter(
+            X1[Y== i, 0], X1[Y == i, 1], color=color, alpha=0.8, lw=lw, label=target_name
+        )
+    ax1.legend(loc="best", shadow=False, scatterpoints=1)
+    ax1.set_title(title2)
+    #LDA
+    #ax2.figure()
+    for color, i, target_name in zip(colors, [0, 1, 2], target_names):
+        ax2.scatter(
+            X2[Y == i, 0], X2[Y == i, 1], alpha=0.8, color=color, label=target_name
+        )
+    ax2.legend(loc="best", shadow=False, scatterpoints=1)
+    ax2.set_title(title2)
+
+    if (ShowPlot):
+        fig.show()
+    return(fig)
 
 def get_security_yahoofinance(ticker, period, columns):
     """
