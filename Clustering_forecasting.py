@@ -15,14 +15,15 @@ import plotly.express as px
 import plotly.graph_objects as go
 #import proprietary module
 import Aux_functions as aux
+import ml_module as ml_module
 from importlib import reload
-reload(aux)
+reload(ml_module)
 
 #Load the dataset
 MyInputData=load_iris()
 
 # 1. Compare the result of Principal Component Analysis and Linear Discriminant Analysis visually
-Dimension = aux.DimensionalityReductionClass(MyInputData)
+Dimension = ml_module.DimensionalityReductionClass(MyInputData)
 X_data, Y, target_names = Dimension.load_target_and_dataset()
 
 #PCA model
@@ -46,7 +47,7 @@ ComparisonPlot=aux.comparison_scatter_plotting_duo(X1,X2,Y, target_names, colors
 
 
 # 2. Compare the result of K-means and MiniBatchKMeans algorythm results
-Clustering = aux.ClusteringClass(MyInputData)
+Clustering = ml_module.ClusteringClass(MyInputData)
 X_data, Y_data, target_names = Clustering.load_target_and_dataset()
 #Calibrate the models
 Calibrated_models= {}
@@ -73,8 +74,6 @@ for i, model in enumerate(ModelList):
     #recalculate pairwise distances
     Cluster_centers_labels[model] = pairwise_distances_argmin(X_data,Ordered_cluster_centers[model])
     
-    
-    print(bela=Cluster_centers_labels[model]==0)
     Ordered_cluster_centers[model][:,0]
     Ordered_cluster_centers[model][:,1]
     target_names
@@ -83,3 +82,8 @@ fig=px.scatter_3d(x=X_data[:,0],y=X_data[:,2],z=X_data[:,1],color=Y, size=X_data
 for i, model in enumerate(ModelList):
     fig.add_trace(go.Scatter3d(x=Ordered_cluster_centers[model][:,0], y=Ordered_cluster_centers[model][:,2], z=Ordered_cluster_centers[model][:,1],  text="Centroid "+model, mode='markers', marker=dict(size=10, color=colors[i])))
 fig.show()
+
+# Section 3 Fitting and training a neural network
+DecisionTree= ml_module.DecisionTree(MyInputData)
+DecisionTree.load_target_and_dataset()
+Treemodel,graph = DecisionTree.visualization()
